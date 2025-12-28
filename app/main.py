@@ -32,11 +32,23 @@ MODE_PATTERN = r"^(normalized|raw)$"
 
 
 def _resolve_version() -> str:
-    env_version = os.getenv("VERSION")
-    if env_version:
-        return env_version
-    sha = _read_git_sha()
-    return sha or "dev"
+    # 1) Preferred: semantic version injected at build/runtime (CI)
+    v = os.getenv("VERSION")
+    if v and v.strip():
+        return v.strip()
+
+    # 2) Fallback: git SHA injected at build/runtime
+    sha = os.getenv("VCS_REF") or os.getenv("GIT_SHA")
+    if sha and sha.strip():
+        return sha.strip()
+
+    # 3) Optional local fallback: read from .git (dev only)
+    sha_fs = _read_git_sha()
+    if sha_fs:
+        return sha_fs
+
+    # 4) Absolute last resort
+    return "dev"
 
 
 def _read_git_sha() -> str | None:
