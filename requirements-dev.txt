@@ -1,0 +1,3 @@
+pytest
+httpx
+httpx>=0.27

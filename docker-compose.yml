@@ -1,0 +1,15 @@
+services:
+  garmin-service:
+    build: .
+    user: "${PUID:-1000}:${PGID:-1000}"
+    env_file:
+      - .env
+    environment:
+      PUID: "${PUID:-1000}"
+      PGID: "${PGID:-1000}"
+      TOKEN_DIR: "${TOKEN_DIR:-/data/tokens}"
+      PORT: "${PORT:-8000}"    
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./garmin-data:/data
