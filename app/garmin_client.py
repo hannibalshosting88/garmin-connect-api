@@ -179,6 +179,8 @@ class GarminClientWrapper:
                     },
                 )
                 self._auth_status = "error"
+                if self._email and self._password:
+                    self._try_relogin_with_creds()
                 return
             except Exception as exc:
                 logger.exception(
@@ -265,14 +267,15 @@ class GarminClientWrapper:
             if hasattr(garth, "restore"):
                 garth.restore(tokens)
                 restored = True
-            elif hasattr(garth, "load"):
+            elif hasattr(garth, "loads"):
+                garth.loads(json.dumps(tokens))
+                restored = True
+            elif hasattr(garth, "load") and isinstance(tokens, (str, bytes, os.PathLike)):
                 garth.load(tokens)
                 restored = True
         if not restored:
-            try:
-                self._client.login(tokens)
-            except TypeError:
-                pass
+            self._login()
+            return
         if garth is not None and hasattr(garth, "refresh"):
             garth.refresh()
         self.token_last_refresh = datetime.now(timezone.utc)
