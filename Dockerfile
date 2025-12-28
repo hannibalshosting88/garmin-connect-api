@@ -13,6 +13,11 @@ RUN pip install --no-cache-dir -r /app/requirements.txt
 COPY app /app/app
 COPY README.md /app/README.md
 
+ARG VERSION=dev
+ARG VCS_REF=dev
+ENV VERSION=$VERSION
+ENV VCS_REF=$VCS_REF
+
 ENV PORT=8000
 EXPOSE 8000
 VOLUME ["/data"]
